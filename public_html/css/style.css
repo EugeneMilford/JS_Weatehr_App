@@ -1,0 +1,82 @@
+body {
+    background-image: url('../weather_bg.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    filter: brightness(80%); /* Adjust brightness of background image */
+    color: white;
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure full viewport height */
+}
+
+.navbar {
+    width: 100%;
+    z-index: 20; /* Ensure it appears above other content */
+}
+
+.custom-navbar {
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+}
+
+.navbar .nav-link {
+    color: white;
+    font-size: 1.2rem; /* Increase font size */
+    font-weight: bold; /* Make text bold */
+}
+
+.navbar .nav-item {
+    margin-right: 1rem; /* Add some spacing between items */
+}
+
+.overlay {
+    flex: 1; /* Take up remaining space */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align items to the top */
+    padding-top: 80px; /* Space for the navbar, adjust as needed */
+}
+
+.custom-div {
+    background-color: rgba(0, 0, 0, 0.8); /* Dark background */
+    color: white;
+    padding: 2rem; /* Adjust padding as needed */
+    border: 2px solid white; /* White border */
+    border-radius: 20px; /* Rounded corners */
+    max-width: 90%; /* Limit width */
+    width: 100%;
+    text-align: center; /* Center content */
+    margin-bottom: 1rem; /* Add some spacing between the divs */
+}
+
+.custom-div h5 {
+    margin-bottom: 1rem; /* Add space below the heading */
+}
+
+.clear-button, .btn-primary {
+    height: 100%; /* Make the button height match the input field */
+    padding: 0.5rem 1rem; /* Adjust padding as needed */
+    border-radius: 20px; /* Rounded corners */
+}
+
+.clear-button:hover {
+    background-color: lightgreen; /* Light green on hover */
+}
+
+.weather-form-control {
+    width: 100%; /* Ensure the input field takes up the full width of the column */
+    padding: 0.5rem 1rem; /* Adjust padding for consistent height */
+    border-radius: 20px; /* Rounded corners */
+}
+
+.footer {
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

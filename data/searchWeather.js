@@ -2,7 +2,7 @@ $(document).ready(function () {
     let searchHistory = JSON.parse(localStorage.getItem('weatherHistory')) || [];
 
     $('#weather-form').on('submit', function (e) {
-        e.preventDefault(); // Prevent the form from submitting the traditional way
+        e.preventDefault();
 
         const city = $('#city-input').val();
 
@@ -18,50 +18,49 @@ $(document).ready(function () {
         };
 
         $.ajax(settings).done(function (response) {
-            console.log(response);
-
-            // Extract relevant data from the response
             const location = response.location.name;
             const region = response.location.region;
             const country = response.location.country;
             const tempC = response.current.temp_c;
             const condition = response.current.condition.text;
+            const windKPH = response.current.wind_kph;
 
-            // Create HTML content with the extracted data
             const weatherHTML = `
                 <p>Location: ${location}, ${region}, ${country}</p>
                 <p>Temperature: ${tempC}°C</p>
                 <p>Condition: ${condition}</p>
+                <p>Wind Speed(km/h): ${windKPH}</p>
             `;
 
-            // Insert the content into the HTML element
             $('#weatherInfo').html(weatherHTML);
 
-            // Add the search to the history
             const historyEntry = {
                 location: `${location}, ${region}, ${country}`,
                 temperature: `${tempC}°C`,
                 condition: condition,
+                windkph: windKPH,
                 date: new Date().toLocaleString()
             };
             searchHistory.push(historyEntry);
 
-            // Save the history to localStorage
             localStorage.setItem('weatherHistory', JSON.stringify(searchHistory));
         }).fail(function () {
             $('#weatherInfo').html('<p>Error fetching data. Please try again.</p>');
         });
     });
 
-    // Load history on history page
     if (window.location.pathname.includes('history.html')) {
         const historyList = $('#historyList');
         const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
 
         if (history.length > 0) {
-            history.forEach(entry => {
+            history.forEach((entry, index) => {
                 const historyHTML = `
-                    <p>${entry.date} - ${entry.location}: ${entry.temperature}, ${entry.condition}</p>
+                    <div class="history-entry" data-index="${index}">
+                        <p>${entry.date} - ${entry.location}: ${entry.temperature}, ${entry.condition}</p>
+                        <button class="details-button btn btn-info" data-index="${index}">Details</button>
+                        <button class="delete-button btn btn-danger" data-index="${index}">Delete</button>
+                    </div>
                 `;
                 historyList.append(historyHTML);
             });
@@ -69,14 +68,25 @@ $(document).ready(function () {
             historyList.html('<p>No history available.</p>');
         }
 
-        // Clear history button handler
         $('#clearHistory').on('click', function () {
             localStorage.removeItem('weatherHistory');
             historyList.html('<p>No history available.</p>');
         });
+
+        historyList.on('click', '.delete-button', function () {
+            const index = $(this).data('index');
+            searchHistory.splice(index, 1);
+            localStorage.setItem('weatherHistory', JSON.stringify(searchHistory));
+            $(this).parent().remove();
+        });
+
+        historyList.on('click', '.details-button', function () {
+            const index = $(this).data('index');
+            localStorage.setItem('selectedCityIndex', index);
+            window.location.href = 'details.html';
+        });
     }
 
-    // Autocomplete functionality
     $('#city-input').autocomplete({
         source: function (request, response) {
             $.ajax({

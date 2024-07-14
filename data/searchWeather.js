@@ -6,6 +6,13 @@ $(document).ready(function () {
 
         const city = $('#city-input').val();
 
+        // Perform search only when city is provided
+        if (city) {
+            fetchWeatherData(city);
+        }
+    });
+
+    function fetchWeatherData(city) {
         const settings = {
             async: true,
             crossDomain: true,
@@ -18,15 +25,13 @@ $(document).ready(function () {
         };
 
         $.ajax(settings).done(function (response) {
-            const location = response.location.name;
-            const region = response.location.region;
-            const country = response.location.country;
+            const location = `${response.location.name}, ${response.location.region}, ${response.location.country}`;
             const tempC = response.current.temp_c;
             const condition = response.current.condition.text;
             const windKPH = response.current.wind_kph;
 
             const weatherHTML = `
-                <p>Location: ${location}, ${region}, ${country}</p>
+                <p>Location: ${location}</p>
                 <p>Temperature: ${tempC}°C</p>
                 <p>Condition: ${condition}</p>
                 <p>Wind Speed(km/h): ${windKPH}</p>
@@ -35,7 +40,7 @@ $(document).ready(function () {
             $('#weatherInfo').html(weatherHTML);
 
             const historyEntry = {
-                location: `${location}, ${region}, ${country}`,
+                location: location,
                 temperature: `${tempC}°C`,
                 condition: condition,
                 windkph: windKPH,
@@ -47,72 +52,23 @@ $(document).ready(function () {
         }).fail(function () {
             $('#weatherInfo').html('<p>Error fetching data. Please try again.</p>');
         });
-    });
-
-    if (window.location.pathname.includes('history.html')) {
-        const historyList = $('#historyList');
-        const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
-
-        if (history.length > 0) {
-            history.forEach((entry, index) => {
-                const historyHTML = `
-                    <div class="history-entry" data-index="${index}">
-                        <p>${entry.date} - ${entry.location}: ${entry.temperature}, ${entry.condition}</p>
-                        <button class="details-button btn btn-info" data-index="${index}">Details</button>
-                        <button class="delete-button btn btn-danger" data-index="${index}">Delete</button>
-                    </div>
-                `;
-                historyList.append(historyHTML);
-            });
-        } else {
-            historyList.html('<p>No history available.</p>');
-        }
-
-        $('#clearHistory').on('click', function () {
-            localStorage.removeItem('weatherHistory');
-            historyList.html('<p>No history available.</p>');
-        });
-
-        historyList.on('click', '.delete-button', function () {
-            const index = $(this).data('index');
-            searchHistory.splice(index, 1);
-            localStorage.setItem('weatherHistory', JSON.stringify(searchHistory));
-            $(this).parent().remove();
-        });
-
-        historyList.on('click', '.details-button', function () {
-            const index = $(this).data('index');
-            localStorage.setItem('selectedCityIndex', index);
-            window.location.href = 'details.html';
-        });
     }
 
+    // Initialize autocomplete
     $('#city-input').autocomplete({
-        source: function (request, response) {
-            $.ajax({
-                url: `https://weatherapi-com.p.rapidapi.com/search.json?q=${request.term}`,
-                method: 'GET',
-                headers: {
-                    'x-rapidapi-key': '2dbc831825msh84a073d47a621bap17f4cfjsn8a5f2a3cea0d',
-                    'x-rapidapi-host': 'weatherapi-com.p.rapidapi.com'
-                },
-                success: function (data) {
-                    response($.map(data, function (item) {
-                        return {
-                            label: item.name,
-                            value: item.name
-                        };
-                    }));
-                }
-            });
+        source: async function (request, response) {
+            try {
+                const data = await weatherService.fetchCities(request.term);
+                response(data.map(city => city.name));
+            } catch (error) {
+                console.error('Error fetching cities:', error);
+            }
         },
         minLength: 2,
         select: function (event, ui) {
             $('#city-input').val(ui.item.value);
+            fetchWeatherData(ui.item.value);
             return false;
         }
     });
 });
-
-
-

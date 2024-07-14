@@ -53,26 +53,7 @@
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="data/searchWeather.js"></script>
-    <script>
-        $(document).ready(function () {
-            const selectedCityIndex = localStorage.getItem('selectedCityIndex');
-
-            if (selectedCityIndex !== null) {
-                const searchHistory = JSON.parse(localStorage.getItem('weatherHistory')) || [];
-                const cityDetails = searchHistory[selectedCityIndex];
-                const detailsHTML = `
-                    <p>Location: ${cityDetails.location}</p>
-                    <p>Temperature: ${cityDetails.temperature}</p>
-                    <p>Condition: ${cityDetails.condition}</p>
-                    <p>Wind Speed(km/h): ${cityDetails.windkph}</p>
-                    <p>Date: ${cityDetails.date}</p>
-                `;
-                $('#detailsInfo').html(detailsHTML);
-            } else {
-                $('#detailsInfo').html('<p>No details available.</p>');
-            }
-        });
-    </script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="data/details.js"></script>
 </body>
 </html>

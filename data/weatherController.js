@@ -38,10 +38,10 @@ $(document).ready(function () {
         }
     });
 
-    $('#clearHistory').on('click', function () {
-        weatherRepository.clearHistory();
-        historyList.html('<p>No history available.</p>');
-    });
+    $('#clearHistoryButton').on('click', function () {
+    weatherRepository.clearHistory(); // Clear history from the repository
+    $('#historyList').html('<p>No history available.</p>'); // Update the UI to reflect the cleared history
+});
 
     historyList.on('click', '.delete-button', function () {
         const index = $(this).data('index');
